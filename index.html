@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverted Memory Test!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & CSS Variables --- */
+        :root {
+            /* Default Theme (Playful Purple/Lime) */
+            --bg-color: #FAF5FF; /* purple-50 */
+            --main-container-bg: #ffffff;
+            --main-container-border: #805AD5; /* purple-600 */
+            --main-container-shadow: #805AD5;
+            --card-bg: #F0FFF4; /* green-50 */
+            --card-border: #9AE6B4; /* green-300 */
+            --card-shadow: #68D391; /* green-400 */
+            --canvas-bg: #F7FAFC; /* gray-100 */
+            --canvas-border: #A0AEC0; /* gray-400 */
+            --feedback-correct-bg: #C6F6D5; /* green-200 */
+            --feedback-incorrect-bg: #FED7D7; /* red-200 */
+            --feedback-text-correct: #22543D; /* green-900 */
+            --feedback-text-incorrect: #9B2C2C; /* red-800 */
+            --action-button-text: white;
+            --action-button-border: #6B46C1; /* purple-700 */
+            --action-button-shadow: #6B46C1;
+            --action-button-hover-shadow: #553C9A; /* purple-800 */
+            --action-button-active-shadow: #6B46C1;
+            --start-button-bg: #A3E635; /* lime-400 */
+            --start-button-hover-bg: #84CC16; /* lime-500 */
+            --start-button-active-bg: #65A30D; /* lime-600 */
+            --reset-button-bg: #F56565; /* red-500 */
+            --reset-button-hover-bg: #E53E3E; /* red-600 */
+            --reset-button-active-bg: #C53030; /* red-700 */
+            --heading-color: #6B46C1; /* purple-700 */
+            --subheading-color: #5A67D8; /* indigo-600 */
+            --text-color: #4A5568; /* gray-700 */
+            --label-color: #6B46C1;
+            --footer-text-color: #718096; /* gray-600 */
+            --focus-ring-color: var(--start-button-bg);
+            --theme-selector-bg: #F0FFF4;
+            --theme-selector-border: #9AE6B4;
+            --theme-selector-text: #22543D;
+            /* Shape Colors */
+            --shape-color-1: #EF4444; /* red-500 */
+            --shape-color-2: #3B82F6; /* blue-500 */
+            --shape-color-3: #22C55E; /* green-500 */
+            --shape-color-4: #EAB308; /* yellow-500 */
+            --shape-color-5: #A855F7; /* purple-500 */
+            --shape-color-6: #F97316; /* orange-500 */
+        }
+
+        /* --- Theme Definitions --- */
+        body[data-theme="ocean-blue"] { --bg-color: #E0F2FE; --main-container-bg: #ffffff; --main-container-border: #075985; --main-container-shadow: #075985; --card-bg: #CFFAFE; --card-border: #67E8F9; --card-shadow: #22D3EE; --canvas-bg: #E0F2FE; --canvas-border: #67E8F9; --feedback-correct-bg: #A5F3FC; --feedback-incorrect-bg: #FFE4E6; --feedback-text-correct: #083344; --feedback-text-incorrect: #9F1239; --action-button-border: #075985; --action-button-shadow: #075985; --action-button-hover-shadow: #075985; --action-button-active-shadow: #075985; --start-button-bg: #38BDF8; --start-button-hover-bg: #0EA5E9; --start-button-active-bg: #0284C7; --reset-button-bg: #FB7185; --reset-button-hover-bg: #F43F5E; --reset-button-active-bg: #E11D48; --heading-color: #0C4A6E; --subheading-color: #155E75; --text-color: #1E3A8A; --label-color: #155E75; --footer-text-color: #0369A1; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #A5F3FC; --theme-selector-border: #67E8F9; --theme-selector-text: #155E75; --shape-color-1: #F87171; --shape-color-2: #60A5FA; --shape-color-3: #34D399; --shape-color-4: #FACC15; --shape-color-5: #A78BFA; --shape-color-6: #FB923C; }
+        body[data-theme="forest-green"] { --bg-color: #F0FFF4; --main-container-bg: #ffffff; --main-container-border: #2F855A; --main-container-shadow: #2F855A; --card-bg: #FEFCBF; --card-border: #F6E05E; --card-shadow: #ECC94B; --canvas-bg: #F0FFF4; --canvas-border: #9AE6B4; --feedback-correct-bg: #C6F6D5; --feedback-incorrect-bg: #FED7D7; --feedback-text-correct: #22543D; --feedback-text-incorrect: #9B2C2C; --action-button-border: #276749; --action-button-shadow: #276749; --action-button-hover-shadow: #22543D; --action-button-active-shadow: #276749; --start-button-bg: #A3E635; --start-button-hover-bg: #84CC16; --start-button-active-bg: #65A30D; --reset-button-bg: #F56565; --reset-button-hover-bg: #E53E3E; --reset-button-active-bg: #C53030; --heading-color: #2F855A; --subheading-color: #276749; --text-color: #2F855A; --label-color: #276749; --footer-text-color: #718096; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #FEFCBF; --theme-selector-border: #F6E05E; --theme-selector-text: #B7791F; --shape-color-1: #F87171; --shape-color-2: #60A5FA; --shape-color-3: #4ADE80; --shape-color-4: #FACC15; --shape-color-5: #A78BFA; --shape-color-6: #FB923C; }
+        body[data-theme="cosmic-purple"] { --bg-color: #FAF5FF; --main-container-bg: #1E1B4B; --main-container-border: #A78BFA; --main-container-shadow: #A78BFA; --card-bg: #3730A3; --card-border: #C4B5FD; --card-shadow: #A78BFA; --canvas-bg: #2E1065; --canvas-border: #7C3AED; --feedback-correct-bg: #A7F3D0; --feedback-incorrect-bg: #FECACA; --feedback-text-correct: #064E3B; --feedback-text-incorrect: #7F1D1D; --action-button-text: #1E1B4B; --action-button-border: #A78BFA; --action-button-shadow: #A78BFA; --action-button-hover-shadow: #A78BFA; --action-button-active-shadow: #A78BFA; --start-button-bg: #F472B6; --start-button-hover-bg: #EC4899; --start-button-active-bg: #DB2777; --reset-button-bg: #F87171; --reset-button-hover-bg: #EF4444; --reset-button-active-bg: #DC2626; --heading-color: #EDE9FE; --subheading-color: #C4B5FD; --text-color: #DDD6FE; --label-color: #C4B5FD; --footer-text-color: #A78BFA; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #4338CA; --theme-selector-border: #A78BFA; --theme-selector-text: #EEF2FF; --shape-color-1: #F472B6; --shape-color-2: #8B5CF6; --shape-color-3: #34D399; --shape-color-4: #FCD34D; --shape-color-5: #F0ABFC; --shape-color-6: #FB923C; }
+        body[data-theme="sunny-yellow"] { --bg-color: #FEF9C3; --main-container-bg: #ffffff; --main-container-border: #CA8A04; --main-container-shadow: #CA8A04; --card-bg: #FEF08A; --card-border: #FACC15; --card-shadow: #EAB308; --canvas-bg: #FFFBEB; --canvas-border: #FDE047; --feedback-correct-bg: #D9F99D; --feedback-incorrect-bg: #FECACA; --feedback-text-correct: #3F6212; --feedback-text-incorrect: #991B1B; --action-button-border: #CA8A04; --action-button-shadow: #CA8A04; --action-button-hover-shadow: #CA8A04; --action-button-active-shadow: #CA8A04; --start-button-bg: #FB923C; --start-button-hover-bg: #F97316; --start-button-active-bg: #EA580C; --reset-button-bg: #F87171; --reset-button-hover-bg: #EF4444; --reset-button-active-bg: #DC2626; --heading-color: #B45309; --subheading-color: #A16207; --text-color: #78350F; --label-color: #A16207; --footer-text-color: #B45309; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #FEF3C7; --theme-selector-border: #FDE047; --theme-selector-text: #854D0E; --shape-color-1: #EF4444; --shape-color-2: #3B82F6; --shape-color-3: #22C55E; --shape-color-4: #EAB308; --shape-color-5: #A855F7; --shape-color-6: #F97316; }
+        body[data-theme="candy-pink"] { --bg-color: #FDF2F8; --main-container-bg: #ffffff; --main-container-border: #9D174D; --main-container-shadow: #9D174D; --card-bg: #FCE7F3; --card-border: #F9A8D4; --card-shadow: #F472B6; --canvas-bg: #FFF0F5; --canvas-border: #FBCFE8; --feedback-correct-bg: #D1FAE5; --feedback-incorrect-bg: #FFE4E6; --feedback-text-correct: #065F46; --feedback-text-incorrect: #9F1239; --action-button-border: #9D174D; --action-button-shadow: #9D174D; --action-button-hover-shadow: #9D174D; --action-button-active-shadow: #9D174D; --start-button-bg: #A78BFA; --start-button-hover-bg: #8B5CF6; --start-button-active-bg: #7C3AED; --reset-button-bg: #FB7185; --reset-button-hover-bg: #F43F5E; --reset-button-active-bg: #E11D48; --heading-color: #831843; --subheading-color: #BE185D; --text-color: #9D174D; --label-color: #BE185D; --footer-text-color: #9D174D; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #FBCFE8; --theme-selector-border: #F9A8D4; --theme-selector-text: #9D174D; --shape-color-1: #F472B6; --shape-color-2: #8B5CF6; --shape-color-3: #34D399; --shape-color-4: #FCD34D; --shape-color-5: #F0ABFC; --shape-color-6: #FB923C; }
+        body[data-theme="night-mode"] { --bg-color: #111827; --main-container-bg: #1F2937; --main-container-border: #6B7280; --main-container-shadow: #9CA3AF; --card-bg: #374151; --card-border: #9CA3AF; --card-shadow: #D1D5DB; --canvas-bg: #1F2937; --canvas-border: #6B7280; --feedback-correct-bg: #10B981; --feedback-incorrect-bg: #EF4444; --feedback-text-correct: #D1FAE5; --feedback-text-incorrect: #FECACA; --action-button-text: #111827; --action-button-border: #9CA3AF; --action-button-shadow: #9CA3AF; --action-button-hover-shadow: #D1D5DB; --action-button-active-shadow: #6B7280; --start-button-bg: #60A5FA; --start-button-hover-bg: #3B82F6; --start-button-active-bg: #2563EB; --reset-button-bg: #F87171; --reset-button-hover-bg: #EF4444; --reset-button-active-bg: #DC2626; --heading-color: #F9FAFB; --subheading-color: #E5E7EB; --text-color: #D1D5DB; --label-color: #E5E7EB; --footer-text-color: #9CA3AF; --focus-ring-color: var(--start-button-bg); --theme-selector-bg: #4B5563; --theme-selector-border: #9CA3AF; --theme-selector-text: #F9FAFB; --shape-color-1: #F87171; --shape-color-2: #60A5FA; --shape-color-3: #34D399; --shape-color-4: #FACC15; --shape-color-5: #A78BFA; --shape-color-6: #FB923C; }
+
+        /* --- General Styles --- */
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding-top: 5rem; /* Space for theme selector */
+            position: relative;
+            transition: background-color 0.3s ease;
+            overflow-x: hidden;
+        }
+        main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+
+        .main-container {
+            background-color: var(--main-container-bg);
+            border: 3px solid var(--main-container-border);
+            border-radius: 20px;
+            box-shadow: 8px 8px 0px var(--main-container-shadow);
+            width: 100%;
+            max-width: 42rem; /* Moderate width */
+            margin: 2rem auto 1rem auto; /* Default margin */
+            padding: 1.5rem sm:p-8;
+            text-align: center;
+            flex-shrink: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Canvas Styling */
+        #canvasContainer {
+            width: 100%;
+            max-width: 400px; /* Limit canvas width */
+            height: 250px; /* Adjusted height */
+            margin: 1.5rem auto;
+            border: 3px solid var(--canvas-border);
+            background-color: var(--canvas-bg);
+            border-radius: 12px;
+            box-shadow: 4px 4px 0px var(--canvas-border);
+            cursor: default; /* Default cursor for display */
+            touch-action: none; /* Prevent scrolling */
+            position: relative;
+            overflow: hidden;
+        }
+        #drawingCanvas { display: block; width: 100%; height: 100%; }
+
+        /* Clickable Choices Area */
+        #choicesArea {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px; /* Gap between buttons */
+            margin-top: 1rem;
+            min-height: 70px; /* Ensure space even when hidden */
+        }
+        .choice-button-visual { /* Buttons for user input */
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(0,0,0,0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .choice-button-visual:hover {
+            transform: scale(1.05);
+        }
+        .choice-button-visual:active {
+            transform: scale(0.95);
+        }
+        .choice-button-visual:disabled {
+            opacity: 0.5;
+            cursor: default;
+            transform: scale(0.9);
+        }
+
+
+        /* Action Button Styles */
+        .action-button {
+            color: var(--action-button-text); font-weight: 700; padding: 0.8rem 1.8rem; border-radius: 1rem; border: 3px solid var(--action-button-border); box-shadow: 5px 5px 0px var(--action-button-shadow); transition: all 0.15s ease-out; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1rem; min-width: 120px; transform-style: preserve-3d;
+        }
+        .action-button:hover:not(:disabled) { box-shadow: 6px 6px 0px var(--action-button-hover-shadow); transform: translateY(-3px) translateX(-2px) translateZ(5px); }
+        .action-button:active:not(:disabled) { box-shadow: 2px 2px 0px var(--action-button-active-shadow); transform: translateY(2px) translateX(2px) translateZ(0px); }
+        .action-button:focus { outline: none; box-shadow: 5px 5px 0px var(--action-button-shadow), 0 0 0 3px var(--bg-color), 0 0 0 5px var(--focus-ring-color); }
+        .action-button:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: 5px 5px 0px var(--action-button-shadow); transform: none; }
+
+        #startBtn { background-color: var(--start-button-bg); border-color: var(--action-button-border); box-shadow: 5px 5px 0px var(--action-button-shadow); --focus-ring-color: var(--start-button-bg); }
+        #startBtn:hover:not(:disabled) { background-color: var(--start-button-hover-bg); box-shadow: 6px 6px 0px var(--action-button-hover-shadow); }
+        #startBtn:active:not(:disabled) { background-color: var(--start-button-active-bg); box-shadow: 2px 2px 0px var(--action-button-active-shadow); }
+
+        #resetBtn { background-color: var(--reset-button-bg); border-color: var(--action-button-border); box-shadow: 5px 5px 0px var(--action-button-shadow); --focus-ring-color: var(--reset-button-bg); }
+        #resetBtn:hover { background-color: var(--reset-button-hover-bg); box-shadow: 6px 6px 0px var(--action-button-hover-shadow); }
+        #resetBtn:active { background-color: var(--reset-button-active-bg); box-shadow: 2px 2px 0px var(--action-button-active-shadow); }
+
+
+        /* Feedback Area Styles */
+        #feedbackArea {
+            min-height: 60px; /* Ensure space for feedback */
+            padding: 0.5rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        #feedbackArea.correct { background-color: var(--feedback-correct-bg); color: var(--feedback-text-correct); }
+        #feedbackArea.incorrect { background-color: var(--feedback-incorrect-bg); color: var(--feedback-text-incorrect); }
+
+        /* Score Area */
+         #scoreArea {
+            margin-top: 1.5rem;
+            font-weight: 500;
+            color: var(--subheading-color);
+         }
+
+
+        /* Headings & Labels */
+        .main-heading { color: var(--heading-color); transition: color 0.3s ease; padding-top: 1rem; /* Default padding */ }
+        .sub-heading { color: var(--subheading-color); transition: color 0.3s ease; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        #instructionText { color: var(--text-color); font-weight: 500; margin-bottom: 1rem; min-height: 2.5em; /* Prevent layout shift */ }
+
+
+        /* Footer Styling */
+        .page-footer { text-align: center; padding: 1rem 0; margin-top: 1rem; font-size: 0.8rem; color: var(--footer-text-color); flex-shrink: 0; line-height: 1.5; transition: color 0.3s ease; }
+        .page-footer p { margin-bottom: 0.25rem; }
+
+        /* Theme Selector Styles */
+        .theme-selector-container { position: absolute; top: 1rem; right: 1rem; z-index: 10; }
+        .theme-selector-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        #themeSelector { padding: 0.4rem 0.8rem; border-radius: 8px; border: 2px solid var(--theme-selector-border); background-color: var(--theme-selector-bg); color: var(--theme-selector-text); font-weight: 500; cursor: pointer; box-shadow: 2px 2px 0px var(--theme-selector-border); transition: all 0.2s ease; vertical-align: middle; font-size: 0.8rem; }
+        #themeSelector:focus { outline: none; box-shadow: 2px 2px 0px var(--theme-selector-border), 0 0 0 3px var(--main-container-bg), 0 0 0 5px var(--theme-selector-border); }
+
+        /* Dark Theme Adjustments */
+        body[data-theme="cosmic-purple"] .main-heading svg,
+        body[data-theme="night-mode"] .main-heading svg { color: #F687B3; /* pink-400 */ }
+        body[data-theme="cosmic-purple"] .sub-heading,
+        body[data-theme="night-mode"] .sub-heading { color: #D1D5DB; }
+        body[data-theme="cosmic-purple"] #themeSelector:focus,
+        body[data-theme="night-mode"] #themeSelector:focus { box-shadow: 2px 2px 0px var(--theme-selector-border), 0 0 0 3px var(--main-container-bg), 0 0 0 5px var(--theme-selector-border); }
+        body[data-theme="night-mode"] #feedbackArea.correct { color: #BEF264; background-color: #3F6212;} /* Lime */
+        body[data-theme="night-mode"] #feedbackArea.incorrect { color: #FCA5A5; background-color: #7F1D1D;} /* Red */
+
+
+        /* Hide class utility */
+        .hidden { display: none; }
+
+        /* Animation for result reveal (can be reused) */
+        @keyframes reveal { from { transform: scale(0.8) rotate(-5deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <div class="theme-selector-container">
+        <label for="themeSelector" class="theme-selector-label">Choose a Theme:</label>
+        <select id="themeSelector">
+            <option value="default">🎨 Default</option>
+            <option value="ocean-blue">🌊 Ocean Blue</option>
+            <option value="forest-green">🌲 Forest Green</option>
+            <option value="cosmic-purple">✨ Cosmic Purple</option>
+            <option value="sunny-yellow">☀️ Sunny Yellow</option>
+            <option value="candy-pink">🍬 Candy Pink</option>
+            <option value="night-mode">🌙 Night Mode</option>
+        </select>
+    </div>
+
+    <main>
+        <div class="main-container">
+            <h1 class="main-heading text-3xl sm:text-4xl font-bold text-center mb-4 tracking-tight flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-9 h-9 text-purple-600">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.624L16.5 21.75l-.398-1.126a3.375 3.375 0 00-2.455-2.456L12.75 18l1.126-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.126a3.375 3.375 0 002.456 2.456L20.25 18l-1.126.398a3.375 3.375 0 00-2.456 2.456z" />
+                </svg>
+                 Inverted Memory Test <span class="text-2xl">🔄</span>
+            </h1>
+
+            <p class="sub-heading text-center mb-6">Watch the sequence of shapes carefully. Then, repeat it by clicking on the shapes below. But beware... the rules might flip! 🤯</p>
+
+            <div id="gameArea">
+                 <div id="canvasContainer">
+                    </div>
+                <div id="feedbackArea" class="text-center font-semibold rounded-lg p-2">
+                    <p id="instructionText">Click "Start Round" to begin!</p>
+                </div>
+                 <div id="choicesArea" class="choices-grid mt-4 hidden">
+                     </div>
+                 <div id="controlsArea" class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <button id="startBtn" class="action-button start-button">🚀 Start Round</button>
+                    <button id="resetBtn" class="action-button reset-button">Reset Game 🔁</button>
+                </div>
+                <div id="scoreArea" class="mt-4 text-sm">
+                    Level: <span id="levelDisplay">1</span> |
+                    Rule: <span id="ruleDisplay" class="font-semibold">Normal</span> |
+                    Successes: <span id="successCount">0</span> |
+                    Attempts: <span id="attemptCount">0</span> |
+                    Failure Rate: <span id="failureRate">0</span>%
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p>© 2025 ToolForge. All rights reserved.</p>
+        <p>Built with ❤️ by Anas.</p>
+    </footer>
+
+    <script>
+        // --- DOM Elements ---
+        const gameArea = document.getElementById('gameArea');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const instructionText = document.getElementById('instructionText');
+        const choicesArea = document.getElementById('choicesArea');
+        const controlsArea = document.getElementById('controlsArea');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scoreArea = document.getElementById('scoreArea');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const ruleDisplay = document.getElementById('ruleDisplay');
+        const successCountSpan = document.getElementById('successCount');
+        const attemptCountSpan = document.getElementById('attemptCount');
+        const failureRateSpan = document.getElementById('failureRate');
+        const themeSelector = document.getElementById('themeSelector');
+
+        // --- Game State & Config ---
+        let sketchInstance;
+        let gameState = 'INITIAL'; // INITIAL, SHOWING, WAITING, FEEDBACK
+        let sequence = [];
+        let userSequence = [];
+        let level = 1;
+        let sequenceLength = 3;
+        let showTime = 1000;
+        let gapTime = 300;
+        let ruleIsReversed = false;
+        let ruleFlipLevel = 4;
+        let availableShapes = ['circle', 'square', 'triangle', 'star'];
+        let availableColors = []; // Populated in setup
+        let shapeSize;
+        let clickableShapes = [];
+        let successCount = 0;
+        let attemptCount = 0;
+        let currentItemIndex = 0; // Index for showing sequence
+        let lastDisplayTime = 0;
+        let showingGap = false; // Whether we are in the gap between items
+
+        // --- Helper: Shuffle Array ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- p5.js Sketch ---
+        const sketch = (p) => {
+            let canvas;
+
+            p.setup = () => {
+                const containerWidth = canvasContainer.offsetWidth;
+                const containerHeight = canvasContainer.offsetHeight;
+                canvas = p.createCanvas(containerWidth, containerHeight);
+                canvas.parent('canvasContainer');
+                canvas.id('drawingCanvas');
+                p.noLoop();
+                p.textAlign(p.CENTER, p.CENTER);
+                shapeSize = p.min(containerWidth, containerHeight) * 0.4;
+                p.textSize(shapeSize * 0.6); // Adjust text size relative to shape size
+                p.updateThemeColors(); // Initial color load
+                console.log("p5 setup complete");
+            };
+
+            p.draw = () => {
+                // Only draw when showing the sequence
+                if (gameState !== 'SHOWING') {
+                    p.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC');
+                    p.noLoop(); // Ensure loop stops if not showing
+                    return;
+                }
+
+                p.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC');
+                const currentTime = p.millis();
+
+                if (showingGap) {
+                    if (currentTime > lastDisplayTime + gapTime) {
+                        showingGap = false;
+                        lastDisplayTime = currentTime;
+                        if (currentItemIndex >= sequence.length) {
+                            gameState = 'WAITING';
+                            p.noLoop();
+                            prepareInputPhase();
+                            return;
+                        }
+                    } else {
+                        return; // Still in gap
+                    }
+                }
+
+                // If not in gap, check item display time
+                if (currentTime > lastDisplayTime + showTime) {
+                    currentItemIndex++;
+                    showingGap = true;
+                    lastDisplayTime = currentTime;
+                    p.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC'); // Clear for gap
+                    return;
+                }
+
+                // Display current item
+                if (currentItemIndex < sequence.length) {
+                    drawItem(sequence[currentItemIndex]);
+                }
+            };
+
+            function drawItem(item) {
+                p.push();
+                p.fill(item.color);
+                p.noStroke();
+                let x = p.width / 2;
+                let y = p.height / 2;
+
+                switch (item.shape) {
+                    case 'circle': p.ellipse(x, y, shapeSize, shapeSize); break;
+                    case 'square': p.rectMode(p.CENTER); p.square(x, y, shapeSize); break;
+                    case 'triangle':
+                        let triHeight = shapeSize * (p.sqrt(3) / 2);
+                        p.triangle(x, y - triHeight / 2, x - shapeSize / 2, y + triHeight / 2, x + shapeSize / 2, y + triHeight / 2);
+                        break;
+                    case 'star': drawStar(x, y, shapeSize * 0.3, shapeSize * 0.6, 5); break;
+                }
+                p.pop();
+            }
+
+             function drawStar(x, y, radius1, radius2, npoints) {
+                let angle = p.TWO_PI / npoints;
+                let halfAngle = angle / 2.0;
+                p.beginShape();
+                for (let a = -p.PI / 2; a < p.TWO_PI - p.PI / 2; a += angle) {
+                    let sx = x + p.cos(a) * radius2; let sy = y + p.sin(a) * radius2;
+                    p.vertex(sx, sy);
+                    sx = x + p.cos(a + halfAngle) * radius1; sy = y + p.sin(a + halfAngle) * radius1;
+                    p.vertex(sx, sy);
+                }
+                p.endShape(p.CLOSE);
+            }
+
+            p.updateThemeColors = () => {
+                 availableColors = [
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-1').trim() || '#EF4444',
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-2').trim() || '#3B82F6',
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-3').trim() || '#22C55E',
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-4').trim() || '#EAB308',
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-5').trim() || '#A855F7',
+                    getComputedStyle(document.documentElement).getPropertyValue('--shape-color-6').trim() || '#F97316',
+                 ];
+                 if (!p.isLooping() && gameState === 'INITIAL') { // Only redraw background if not actively drawing
+                     p.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC');
+                 }
+            };
+
+             p.windowResized = () => {
+                 const containerWidth = canvasContainer.offsetWidth;
+                 const containerHeight = canvasContainer.offsetHeight;
+                 p.resizeCanvas(containerWidth, containerHeight);
+                 shapeSize = p.min(containerWidth, containerHeight) * 0.4;
+                 p.textSize(shapeSize * 0.6);
+                 if (!p.isLooping()) { // Redraw background if needed
+                     p.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC');
+                 }
+             };
+        }; // End of sketch function
+
+        // --- Game Logic Functions ---
+
+        function startRound() {
+            gameState = 'SHOWING';
+            userSequence = [];
+            currentItemIndex = 0;
+            lastDisplayTime = 0;
+            showingGap = true;
+            sequence = generateSequence(sequenceLength);
+            instructionText.textContent = "Watch carefully...";
+            feedbackArea.className = 'text-center font-semibold rounded-lg p-2';
+            choicesArea.classList.add('hidden');
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+
+            if (level >= ruleFlipLevel && Math.random() < 0.4) { // 40% chance to flip after level 4
+                ruleIsReversed = !ruleIsReversed; // Flip the rule
+                 instructionText.textContent = `RULE ${ruleIsReversed ? 'REVERSED' : 'NORMAL'}! 🔄`;
+                 setTimeout(() => {
+                     instructionText.textContent = "Watch carefully...";
+                     if (sketchInstance) sketchInstance.loop();
+                 }, 1500);
+            } else {
+                 if (sketchInstance) sketchInstance.loop();
+            }
+            updateScoreDisplay();
+        }
+
+        function generateSequence(len) {
+            const newSequence = [];
+            const availableItems = [];
+             availableShapes.forEach(shape => {
+                 availableColors.forEach(color => {
+                     availableItems.push({ shape, color });
+                 });
+             });
+             shuffleArray(availableItems);
+
+            for (let i = 0; i < len; i++) {
+                 newSequence.push(availableItems[i % availableItems.length]);
+            }
+            return newSequence;
+        }
+
+        function prepareInputPhase() {
+            gameState = 'WAITING';
+            instructionText.textContent = ruleIsReversed ? "Click the shapes in REVERSE order! 🔄" : "Click the shapes in the order shown.";
+            choicesArea.innerHTML = '';
+            choicesArea.classList.remove('hidden');
+            startBtn.disabled = true;
+            resetBtn.disabled = false;
+
+            clickableShapes = [];
+            const displayItems = [...sequence];
+            shuffleArray(displayItems); // Shuffle display order
+
+            displayItems.forEach((item) => {
+                const button = document.createElement('button');
+                button.className = 'choice-button-visual';
+                button.style.backgroundColor = item.color;
+                button.dataset.shape = item.shape;
+                button.dataset.color = item.color;
+
+                // Add SVG for shape representation inside button
+                const svgSize = 30; // Size of SVG icon
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("width", svgSize);
+                svg.setAttribute("height", svgSize);
+                svg.setAttribute("viewBox", "0 0 100 100"); // Viewbox for easy drawing
+                svg.style.pointerEvents = "none"; // Prevent SVG from capturing clicks
+
+                let shapeElement;
+                const strokeColor = getContrastColor(item.color); // Get contrasting stroke
+
+                switch(item.shape) {
+                    case 'circle':
+                        shapeElement = document.createElementNS(svgNS, "circle");
+                        shapeElement.setAttribute("cx", 50);
+                        shapeElement.setAttribute("cy", 50);
+                        shapeElement.setAttribute("r", 40);
+                        break;
+                    case 'square':
+                        shapeElement = document.createElementNS(svgNS, "rect");
+                        shapeElement.setAttribute("x", 10);
+                        shapeElement.setAttribute("y", 10);
+                        shapeElement.setAttribute("width", 80);
+                        shapeElement.setAttribute("height", 80);
+                         shapeElement.setAttribute("rx", 5); // Slightly rounded corners
+                        break;
+                    case 'triangle':
+                        shapeElement = document.createElementNS(svgNS, "polygon");
+                        shapeElement.setAttribute("points", "50,10 90,90 10,90");
+                        break;
+                    case 'star': // Simple 5-point star path
+                         shapeElement = document.createElementNS(svgNS, "polygon");
+                         shapeElement.setAttribute("points", "50,5 61,40 98,40 68,62 79,96 50,75 21,96 32,62 2,40 39,40");
+                        break;
+                }
+                if (shapeElement) {
+                    shapeElement.setAttribute("fill", "none"); // Use button background
+                    shapeElement.setAttribute("stroke", strokeColor);
+                    shapeElement.setAttribute("stroke-width", "8"); // Make stroke visible
+                    svg.appendChild(shapeElement);
+                    button.appendChild(svg);
+                }
+
+
+                button.addEventListener('click', handleChoiceClick);
+                choicesArea.appendChild(button);
+                clickableShapes.push({ element: button, itemData: item });
+             });
+        }
+
+        // Helper to get contrasting color (simple version)
+        function getContrastColor(hexcolor){
+            hexcolor = hexcolor.replace("#", "");
+            let r = parseInt(hexcolor.substr(0,2),16);
+            let g = parseInt(hexcolor.substr(2,2),16);
+            let b = parseInt(hexcolor.substr(4,2),16);
+            let yiq = ((r*299)+(g*587)+(b*114))/1000;
+            return (yiq >= 128) ? '#333333' : '#FFFFFF'; // Dark or light contrast
+        }
+
+
+        function handleChoiceClick(event) {
+            if (gameState !== 'WAITING') return;
+            const clickedButton = event.target.closest('.choice-button-visual');
+            if (!clickedButton || clickedButton.disabled) return;
+
+            const clickedItem = clickableShapes.find(c => c.element === clickedButton)?.itemData;
+            if (!clickedItem) return;
+
+            userSequence.push(clickedItem);
+            clickedButton.style.transform = 'scale(0.9)';
+            clickedButton.disabled = true;
+            clickedButton.style.opacity = '0.5';
+            clickedButton.style.cursor = 'default';
+
+            if (userSequence.length === sequence.length) {
+                checkUserSequence();
+            }
+        }
+
+        function checkUserSequence() {
+            gameState = 'FEEDBACK';
+            choicesArea.classList.add('hidden');
+            attemptCount++;
+
+            let correct = true;
+            const targetSequence = ruleIsReversed ? [...sequence].reverse() : sequence;
+
+            for (let i = 0; i < sequence.length; i++) {
+                if (userSequence[i].shape !== targetSequence[i].shape || userSequence[i].color !== targetSequence[i].color) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            if (correct) {
+                feedbackArea.className = 'text-center font-semibold rounded-lg p-2 correct';
+                instructionText.textContent = "Correct! 🎉 Well remembered!";
+                successCount++;
+                level++;
+                sequenceLength++;
+                showTime = Math.max(400, showTime - 50);
+            } else {
+                feedbackArea.className = 'text-center font-semibold rounded-lg p-2 incorrect';
+                instructionText.textContent = `Oops! ${ruleIsReversed ? 'Remember the REVERSE order! 🔄' : 'Wrong sequence.'} Try again!`;
+                // sequenceLength = Math.max(3, sequenceLength - 1); // Optional penalty
+            }
+
+            updateScoreDisplay();
+            startBtn.disabled = false;
+            startBtn.textContent = "🚀 Next Round";
+            resetBtn.disabled = false;
+        }
+
+        function updateScoreDisplay() {
+            levelDisplay.textContent = level;
+            ruleDisplay.textContent = ruleIsReversed ? "Reversed 🔄" : "Normal";
+            successCountSpan.textContent = successCount;
+            attemptCountSpan.textContent = attemptCount;
+            const rate = attemptCount === 0 ? 0 : Math.round((attemptCount - successCount) / attemptCount * 100);
+            failureRateSpan.textContent = rate;
+        }
+
+        function resetGame() {
+            level = 1;
+            sequenceLength = 3;
+            showTime = 1000;
+            ruleIsReversed = false;
+            successCount = 0;
+            attemptCount = 0;
+            userSequence = [];
+            sequence = [];
+            gameState = 'INITIAL';
+
+            instructionText.textContent = "Click 'Start Round' to begin!";
+            feedbackArea.className = 'text-center font-semibold rounded-lg p-2';
+            choicesArea.classList.add('hidden');
+            startBtn.disabled = false;
+            startBtn.textContent = "🚀 Start Round";
+            resetBtn.disabled = false;
+             if (sketchInstance) {
+                 sketchInstance.noLoop();
+                 if (typeof sketchInstance.background === 'function') { // Check if background exists
+                    sketchInstance.background(getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg').trim() || '#F7FAFC');
+                 }
+             }
+            updateScoreDisplay();
+        }
+
+        // --- Theme Switching Logic (With localStorage) ---
+        function applyTheme(themeName) {
+            document.body.dataset.theme = themeName;
+            try { localStorage.setItem('invertedMemoryTheme', themeName); }
+            catch (e) { console.warn("Could not save theme preference:", e); }
+            if (sketchInstance && typeof sketchInstance.updateThemeColors === 'function') {
+                sketchInstance.updateThemeColors();
+            }
+        }
+
+        function loadSavedTheme() {
+            let savedTheme = 'default';
+            try { savedTheme = localStorage.getItem('invertedMemoryTheme') || 'default'; }
+            catch (e) { console.warn("Could not load theme preference:", e); }
+            themeSelector.value = savedTheme;
+            applyTheme(savedTheme);
+        }
+
+        themeSelector.addEventListener('change', (event) => applyTheme(event.target.value));
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startRound);
+        resetBtn.addEventListener('click', resetGame);
+
+        // --- Initial Load ---
+        loadSavedTheme();
+        sketchInstance = new p5(sketch);
+        // Use p5's instance mode readiness check if possible, otherwise use timeout
+        // This assumes p5 setup completes reasonably fast. For complex setups, use preload or callbacks.
+        setTimeout(resetGame, 200); // Increased delay slightly
+
+    </script>
+
+</body>
+</html>
